@@ -52,6 +52,7 @@ def get_powerbank(powerbank_ID: int):
 def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
     something = powerbank.pop(0)
+    print(body)
     all_users = list(user_database.find({"user_ID": body.user_ID, "password": body.password}, {'_id': False}))
     if not len(all_users):
         raise HTTPException(401, "UserID and Password doesn't match.")
