@@ -57,7 +57,7 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
         raise HTTPException(401, "UserID and Password doesn't match.")
     user = all_users.pop(0)
     powerbank_database.update_one(something, {"$set": 
-                                                {
+                                                {   
                                                     "borrow_mai": 1,
                                                     "yu_mai": 0,
                                                     "user_ID": body.user_ID,
@@ -66,16 +66,25 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
                                                     "start_time": datetime.now().timestamp(),
                                                     "end_time": (datetime.now() + timedelta(hours=5)).timestamp()
                                                 }
-                                            }
+                                             }
                                         )
     return something
 
 
-@router.put('/return-laew')
+@router.put('/return-laew/{powerbank_ID}')
 def return_powerbank(powerbank_ID: int):
-    pass
+    powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
+    try:
+        something = powerbank.pop(0)
+    except IndexError:
+        raise HTTPException(406, f"ID:{powerbank_ID} is not our powerbank.")
+    powerbank_database.update_one(something, {"$set": {"yu_mai": 1}})
+    return powerbank
 
 
-@router.put('/pai-laew')
+@router.put('/pai-laew/{powerbank_ID}')
 def pai_leaw_naaaa(powerbank_ID: int):
-    pass
+    powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
+    something = powerbank.pop(0)
+    powerbank_database.update_one(something, {"$set": {"yu_mai": 0}})
+    return powerbank
