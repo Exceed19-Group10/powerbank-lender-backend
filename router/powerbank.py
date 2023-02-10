@@ -66,9 +66,18 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
                                                     "start_time": datetime.now().timestamp(),
                                                     "end_time": (datetime.now() + timedelta(hours=5)).timestamp()
                                                 }
-                                             }
+                                            }
                                         )
-    return something
+    return {   
+                "powerbank_ID": powerbank_ID,
+                "borrow_mai": 1,
+                "yu_mai": 0,
+                "user_ID": body.user_ID,
+                "username": user["username"],
+                "user_dept": user["user_dept"],
+                "start_time": datetime.now().timestamp(),
+                "end_time": (datetime.now() + timedelta(hours=5)).timestamp()
+            }
 
 
 @router.put('/return-laew/{powerbank_ID}')
@@ -79,7 +88,7 @@ def return_powerbank(powerbank_ID: int):
     except IndexError:
         raise HTTPException(406, f"ID:{powerbank_ID} is not our powerbank.")
     powerbank_database.update_one(something, {"$set": {"yu_mai": 1}})
-    return powerbank
+    return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
 
 
 @router.put('/check-dai-mai/{powerbank_ID}')
@@ -94,8 +103,13 @@ def confirm_return(powerbank_ID: int):
                                                             "user_dept": "",
                                                             "start_time": 0,
                                                             "end_time": 0
-                                                          }
-                                                 }
-                                     )
+                                                        }
+                                                }
+                                        )
+        return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
     raise HTTPException(400, "This powerbank is not available.")
-    
+
+
+@router.put('/fee/{}')
+def fee():
+    pass
