@@ -65,7 +65,7 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
                                                     "username": user["username"],
                                                     "user_dept": user["user_dept"],
                                                     "start_time": datetime.now().timestamp(),
-                                                    "end_time": (datetime.now() + timedelta(hours=5)).timestamp()
+                                                    "end_time": (datetime.now() + timedelta(hours=1)).timestamp()
                                                 }
                                             }
                                         )
