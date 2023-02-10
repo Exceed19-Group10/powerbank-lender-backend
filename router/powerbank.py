@@ -78,13 +78,29 @@ def return_powerbank(powerbank_ID: int):
         something = powerbank.pop(0)
     except IndexError:
         raise HTTPException(406, f"ID:{powerbank_ID} is not our powerbank.")
-    powerbank_database.update_one(something, {"$set": {"yu_mai": 1}})
+    powerbank_database.update_one(something, {"$set": {
+                                                        "yu_mai": 1,
+                                                        "user_ID": 0,
+                                                        "username": "",
+                                                        "user_dept": "",
+                                                        "start_time": 0,
+                                                        "end_time": 0
+                                                      }
+                                             }
+                                 )
     return powerbank
 
 
-@router.put('/pai-laew/{powerbank_ID}')
-def pai_leaw_naaaa(powerbank_ID: int):
-    powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
-    something = powerbank.pop(0)
-    powerbank_database.update_one(something, {"$set": {"yu_mai": 0}})
-    return powerbank
+# @router.put('/pai-laew/{powerbank_ID}')
+# def pai_leaw_naaaa(powerbank_ID: int):
+#     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
+#     something = powerbank.pop(0)
+#     powerbank_database.update_one(something, {"$set": {"yu_mai": 0}})
+#     return powerbank
+
+
+# @router.put('/check-dai-mai/powerbank_ID')
+# def confirm_return(powerbank_ID: int):
+#     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
+#     something = powerbank.pop(0)
+    
