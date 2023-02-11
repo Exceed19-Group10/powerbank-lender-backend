@@ -4,7 +4,6 @@ from router import powerbank
 
 
 app = FastAPI()
-app.include_router(powerbank.router)
 
 
 origins = ["*"]
@@ -17,6 +16,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(powerbank.router)
 
 
 @app.get("/")

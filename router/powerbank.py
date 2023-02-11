@@ -94,6 +94,14 @@ def return_powerbank(powerbank_ID: int):
     return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
 
 
+# @router.put('/pai-laew/{powerbank_ID}')
+# def pai_leaw_naaaa(powerbank_ID: int):
+#     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
+#     something = powerbank.pop(0)
+#     powerbank_database.update_one(something, {"$set": {"yu_mai": 0}})
+#     return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
+
+
 @router.put('/check-dai-mai/{powerbank_ID}')
 def confirm_return(powerbank_ID: int):
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
@@ -113,6 +121,8 @@ def confirm_return(powerbank_ID: int):
     raise HTTPException(400, "This powerbank is not available.")
 
 
-@router.put('/fee/{}')
-def fee():
-    pass
+@router.put('/fee/{powerbank_ID}')
+def fee(powerbank_ID: int):
+    powerbank = powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False})
+    something = powerbank.pop(0)
+    
