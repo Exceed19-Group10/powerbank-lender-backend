@@ -78,7 +78,6 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
     powerbank_database.update_one(something, {"$set": 
                                                 {   
                                                     "borrow_mai": 1,
-                                                    "yu_mai": 0,
                                                     "user_ID": body.user_ID,
                                                     "username": user["username"],
                                                     "user_dept": user["user_dept"],
