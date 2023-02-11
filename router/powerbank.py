@@ -122,7 +122,7 @@ def confirm_return(powerbank_ID: int):
     raise HTTPException(400, "This powerbank is not available.")
 
 
-@router.put('/fee/{powerbank_ID}')
+@router.get('/fee/{powerbank_ID}')
 def fee(powerbank_ID: int):
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
     something = powerbank.pop(0)
