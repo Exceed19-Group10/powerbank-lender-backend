@@ -46,6 +46,9 @@ class BorrowLaewNaRequestBody(BaseModel):
     password: str
 
 
+class ReturnLaewRequestBody(BaseModel):
+    powerbank_ID: int
+
 @router.get('/all-powerbank')
 def get_all_powerbank():
     powerbank_list = list(powerbank_database.find({}, {"_id":False}))
@@ -93,22 +96,22 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
 
 
 @router.put('/return-laew/{powerbank_ID}')
-def return_powerbank(powerbank_ID: int):
-    powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
+def return_powerbank(body: ReturnLaewRequestBody):
+    powerbank = list(powerbank_database.find({"powerbank_ID": body.powerbank_ID}, {'_id': False}))
     try:
         something = powerbank.pop(0)
     except IndexError as e:
-        raise HTTPException(406, f"ID:{powerbank_ID} is not our powerbank.") from e
+        raise HTTPException(406, f"ID:{body.powerbank_ID} is not our powerbank.") from e
     powerbank_database.update_one(something, {"$set": {"yu_mai": 1}})
-    return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
+    return list(powerbank_database.find({"powerbank_ID": body.powerbank_ID}, {'_id': False}))[0]
 
 
 @router.put('/pai-laew/{powerbank_ID}')
-def pai_leaw_naaaa(powerbank_ID: int):
-    powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
+def pai_leaw_naaaa(body: ReturnLaewRequestBody):
+    powerbank = list(powerbank_database.find({"powerbank_ID": body.powerbank_ID}, {'_id': False}))
     something = powerbank.pop(0)
     powerbank_database.update_one(something, {"$set": {"yu_mai": 0}})
-    return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
+    return list(powerbank_database.find({"powerbank_ID": body.powerbank_ID}, {'_id': False}))[0]
 
 
 @router.put('/check-dai-mai/{powerbank_ID}')
