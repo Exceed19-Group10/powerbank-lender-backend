@@ -128,7 +128,7 @@ def fee(powerbank_ID: int):
     something = powerbank.pop(0)
     from_user_database = list(user_database.find({"user_ID": something["user_ID"]}, {'_id': False}))
     user = from_user_database.pop(0)
-    current_time = datetime.now().timestamp() # Current time
+    current_time = (datetime.now() - timedelta(hours=7)).timestamp() # Current time
     difference = (current_time - something["end_time"]) # difference / 60 = result in Minute
     fee = (ceil(difference - 30)) * 1 if difference > 30 else 0
     user_database.update_one(user, {"$set": {"user_fee": fee}})
