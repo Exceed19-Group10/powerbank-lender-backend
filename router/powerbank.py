@@ -106,7 +106,10 @@ def return_powerbank(powerbank_ID: int):
 @router.put('/pai-laew/{powerbank_ID}')
 def pai_leaw_naaaa(powerbank_ID: int):
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
-    something = powerbank.pop(0)
+    try:
+        something = powerbank.pop(0)
+    except IndexError as e:
+        raise HTTPException(406, f"ID:{powerbank_ID} is not our powerbank.") from e
     powerbank_database.update_one(something, {"$set": {"yu_mai": 0}})
     return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
 
