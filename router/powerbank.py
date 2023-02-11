@@ -62,7 +62,7 @@ def get_powerbank(powerbank_ID: int):
 
 @router.put('/borrow-laew/{powerbank_ID}')
 def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
-    """"""
+    """This method is used when someone borrow powerbank."""
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
     try:
         something = powerbank.pop(0)
@@ -137,7 +137,7 @@ def pai_leaw_naaaa(powerbank_ID: int):
 
 @router.put('/check-dai-mai/{powerbank_ID}')
 def confirm_return(powerbank_ID: int):
-    """"""
+    """This method is used for confirm that powerbank is really back to its position."""
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {"_id": False}))
     # print(powerbank)
     try:
