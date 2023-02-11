@@ -68,7 +68,7 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
                                                     "username": user["username"],
                                                     "user_dept": user["user_dept"],
                                                     "start_time": datetime.now().timestamp(),
-                                                    "end_time": (datetime.now() + timedelta(hours=1)).timestamp()
+                                                    "end_time": (datetime.now() + timedelta(seconds=30)).timestamp()
                                                 }
                                             }
                                         )
@@ -80,7 +80,7 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
                 "username": user["username"],
                 "user_dept": user["user_dept"],
                 "start_time": datetime.now().timestamp(),
-                "end_time": (datetime.now() + timedelta(hours=5)).timestamp()
+                "end_time": (datetime.now() + timedelta(seconds=30)).timestamp()
             }
 
 
@@ -95,12 +95,12 @@ def return_powerbank(powerbank_ID: int):
     return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
 
 
-# @router.put('/pai-laew/{powerbank_ID}')
-# def pai_leaw_naaaa(powerbank_ID: int):
-#     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
-#     something = powerbank.pop(0)
-#     powerbank_database.update_one(something, {"$set": {"yu_mai": 0}})
-#     return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
+@router.put('/pai-laew/{powerbank_ID}')
+def pai_leaw_naaaa(powerbank_ID: int):
+    powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
+    something = powerbank.pop(0)
+    powerbank_database.update_one(something, {"$set": {"yu_mai": 0}})
+    return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
 
 
 @router.put('/check-dai-mai/{powerbank_ID}')
