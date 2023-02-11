@@ -57,7 +57,7 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
     if not len(all_users):
         raise HTTPException(401, "Authentication Error because UserID and Password doesn't match.")
     user = all_users.pop(0)
-    if not user["fee"]:
+    if not user["user_fee"]:
         raise HTTPException(406, "You haven't paid your fee.")
     powerbank_database.update_one(something, {"$set": 
                                                 {   
@@ -125,4 +125,3 @@ def confirm_return(powerbank_ID: int):
 def fee(powerbank_ID: int):
     powerbank = powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False})
     something = powerbank.pop(0)
-    
