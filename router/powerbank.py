@@ -15,7 +15,7 @@ router = APIRouter(
 
 
 class User(BaseModel):
-    user_ID: int
+    user_ID: str
     password: str
     username: str
     user_dept: str
@@ -26,7 +26,7 @@ class PowerBank(BaseModel):
     powerbank_ID: int
     borrow_mai: int
     yu_mai: int
-    user_ID: Union[None, int]
+    user_ID: Union[None, str]
     username: Union[None, str]
     user_dept: Union[None, str]
     start_time: Union[None, datetime]
@@ -34,7 +34,7 @@ class PowerBank(BaseModel):
     late_mai: Union[None, int]
 
 class BorrowLaewNaRequestBody(BaseModel):
-    user_ID: int
+    user_ID: str
     password: str
 
 
