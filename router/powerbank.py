@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel
 from datetime import datetime, timedelta
-from database.database import user_database, powerbank_database
+from database.database import user_database, powerbank_database, borrower_history
 
 
 router = APIRouter(
@@ -80,6 +80,15 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
                                                 }
                                             }
                                         )
+    updated_powerbank_data = powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False})
+    updated_powerbank = updated_powerbank_data.pop(0)
+    borrower_history.insert_one(
+        {
+            "power_ID": powerbank_ID, 
+            "user_ID": user["user_ID"], 
+            "borrow_time": updated_powerbank["end_time"] - updated_powerbank["start_time"], 
+            "late_mai": 0
+        })
     return {   
                 "powerbank_ID": powerbank_ID,
                 "borrow_mai": 1,
@@ -119,6 +128,10 @@ def confirm_return(powerbank_ID: int):
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
     something = powerbank.pop(0)
     if something["yu_mai"] == 1:
+        if something["end_time"] < datetime.now().timestamp():
+            borrow_history.update_one({"powerbank_ID": powerbank_ID}, {"$set": {"late_mai": 1}})
+        else:
+            borrow_history.update_one({"powerbank_ID": powerbank_ID}, {"$set": {"late_mai": 0}})
         powerbank_database.update_one(something, {"$set": {
                                                             "borrow_mai": 0,
                                                             "user_ID": 0,
@@ -152,6 +165,7 @@ def fee(powerbank_ID: int):
     }
 
 
-@router.get('/history')
+@router.get('/get-history')
 def borrow_history():
-    pass
+    history = list(borrow_history.find({}, {"_id": False}))
+    return {"user_history": history}
