@@ -55,8 +55,10 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
     print(body)
     all_users = list(user_database.find({"user_ID": body.user_ID, "password": body.password}, {'_id': False}))
     if not len(all_users):
-        raise HTTPException(401, "UserID and Password doesn't match.")
+        raise HTTPException(401, "Authentication Error because UserID and Password doesn't match.")
     user = all_users.pop(0)
+    if not user["fee"]:
+        raise HTTPException(406, "You haven't paid your fee.")
     powerbank_database.update_one(something, {"$set": 
                                                 {   
                                                     "borrow_mai": 1,
@@ -86,8 +88,8 @@ def return_powerbank(powerbank_ID: int):
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
     try:
         something = powerbank.pop(0)
-    except IndexError:
-        raise HTTPException(406, f"ID:{powerbank_ID} is not our powerbank.")
+    except IndexError as e:
+        raise HTTPException(406, f"ID:{powerbank_ID} is not our powerbank.") from e
     powerbank_database.update_one(something, {"$set": {"yu_mai": 1}})
     return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
 
