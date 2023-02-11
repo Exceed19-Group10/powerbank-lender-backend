@@ -1,3 +1,4 @@
+from math import ceil
 from typing import Union
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
@@ -53,10 +54,10 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
     something = powerbank.pop(0)
     print(body)
-    all_users = list(user_database.find({"user_ID": body.user_ID, "password": body.password}, {'_id': False}))
-    if not len(all_users):
+    from_user_database = list(user_database.find({"user_ID": body.user_ID, "password": body.password}, {'_id': False}))
+    if not len(from_user_database):
         raise HTTPException(401, "Authentication Error because UserID and Password doesn't match.")
-    user = all_users.pop(0)
+    user = from_user_database.pop(0)
     if user["user_fee"] != 0:
         raise HTTPException(406, "You haven't paid your fee.")
     powerbank_database.update_one(something, {"$set": 
@@ -123,5 +124,18 @@ def confirm_return(powerbank_ID: int):
 
 @router.put('/fee/{powerbank_ID}')
 def fee(powerbank_ID: int):
-    powerbank = powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False})
+    powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
     something = powerbank.pop(0)
+    from_user_database = list(user_database.find({"user_ID": something["user_ID"]}, {'_id': False}))
+    user = from_user_database.pop(0)
+    current_time = datetime.now().timestamp() # Current time
+    difference = (current_time - something["end_time"]) # difference / 60 = result in Minute
+    fee = (ceil(difference - 30)) * 1 if difference > 30 else 0
+    user_database.update_one(user, {"$set": {"user_fee": fee}})
+    return {
+        "user_ID": something["user_ID"],
+        "password": user["password"],
+        "username": user["username"],
+        "user_dept": user["user_dept"],
+        "user_fee": fee
+    }
