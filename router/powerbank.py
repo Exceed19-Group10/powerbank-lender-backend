@@ -92,7 +92,7 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
             }
 
 
-@router.put('/return-laew')
+@router.put('/return-laew/{powerbank_ID}')
 def return_powerbank(powerbank_ID: int):
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
     try:
