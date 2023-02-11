@@ -68,7 +68,7 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
                                                     "username": user["username"],
                                                     "user_dept": user["user_dept"],
                                                     "start_time": datetime.now().timestamp(),
-                                                    "end_time": (datetime.now() + timedelta(seconds=30)).timestamp()
+                                                    "end_time": (datetime.now() + timedelta(seconds=30) - timedelta(hours=7)).timestamp()
                                                 }
                                             }
                                         )
@@ -80,7 +80,7 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
                 "username": user["username"],
                 "user_dept": user["user_dept"],
                 "start_time": datetime.now().timestamp(),
-                "end_time": (datetime.now() + timedelta(seconds=30)).timestamp()
+                "end_time": (datetime.now() + timedelta(seconds=30) - timedelta(hours=7)).timestamp()
             }
 
 
@@ -139,3 +139,8 @@ def fee(powerbank_ID: int):
         "user_dept": user["user_dept"],
         "user_fee": fee
     }
+
+
+@router.post('/history')
+def borrow_history():
+    pass
