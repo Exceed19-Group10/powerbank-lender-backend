@@ -1,5 +1,6 @@
 from math import ceil
 from typing import Union
+from pymongo import DESCENDING
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel
@@ -31,14 +32,14 @@ class PowerBank(BaseModel):
     user_dept: Union[None, str]
     start_time: Union[None, datetime]
     end_time: Union[None, datetime]
-    late_mai: Union[None, int]
 
 
 class BorrowerHistory(BaseModel): 
     powerbank_ID: int
     username: str
-    use_time: str
-    # user_fee: int
+    borrower_time: int
+    late_mai: Union[None, int]
+    time: int
 
 
 class BorrowLaewNaRequestBody(BaseModel):
@@ -61,7 +62,7 @@ def get_powerbank(powerbank_ID: int):
 def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
     something = powerbank.pop(0)
-    print(body)
+    # print(body)
     from_user_database = list(user_database.find({"user_ID": body.user_ID, "password": body.password}, {'_id': False}))
     if not len(from_user_database):
         raise HTTPException(401, "Authentication Error because UserID and Password doesn't match.")
@@ -75,19 +76,21 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
                                                     "user_ID": body.user_ID,
                                                     "username": user["username"],
                                                     "user_dept": user["user_dept"],
-                                                    "start_time": datetime.now().timestamp(),
+                                                    "start_time": (datetime.now() - timedelta(hours=7)).timestamp(),
                                                     "end_time": (datetime.now() + timedelta(seconds=30) - timedelta(hours=7)).timestamp()
                                                 }
                                             }
                                         )
-    updated_powerbank_data = powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False})
+    updated_powerbank_data = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
     updated_powerbank = updated_powerbank_data.pop(0)
     borrower_history.insert_one(
         {
-            "power_ID": powerbank_ID, 
+            "powerbank_ID": powerbank_ID, 
             "user_ID": user["user_ID"], 
+            "username": user["username"],
             "borrow_time": updated_powerbank["end_time"] - updated_powerbank["start_time"], 
-            "late_mai": 0
+            "late_mai": 0,
+            "time": updated_powerbank["start_time"]
         })
     return {   
                 "powerbank_ID": powerbank_ID,
@@ -96,7 +99,7 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
                 "user_ID": body.user_ID,
                 "username": user["username"],
                 "user_dept": user["user_dept"],
-                "start_time": datetime.now().timestamp(),
+                "start_time": (datetime.now() - timedelta(hours=7)).timestamp(),
                 "end_time": (datetime.now() + timedelta(seconds=30) - timedelta(hours=7)).timestamp()
             }
 
@@ -125,13 +128,20 @@ def pai_leaw_naaaa(powerbank_ID: int):
 
 @router.put('/check-dai-mai/{powerbank_ID}')
 def confirm_return(powerbank_ID: int):
-    powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
-    something = powerbank.pop(0)
+    powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {"_id": False}))
+    # print(powerbank)
+    try:
+        something = powerbank.pop(0)
+    except IndexError as e:
+        raise HTTPException(406, f"ID:{powerbank_ID} is not our powerbank.") from e
+    user_history = list(borrower_history.find({"powerbank_ID": powerbank_ID}, {"_id": False}).sort("time", DESCENDING))
+    # print(user_history)
+    user = user_history.pop(0)
     if something["yu_mai"] == 1:
         if something["end_time"] < datetime.now().timestamp():
-            borrow_history.update_one({"powerbank_ID": powerbank_ID}, {"$set": {"late_mai": 1}})
+            borrower_history.update_one(user, {"$set": {"late_mai": 1}})
         else:
-            borrow_history.update_one({"powerbank_ID": powerbank_ID}, {"$set": {"late_mai": 0}})
+            borrower_history.update_one(user, {"$set": {"late_mai": 0}})
         powerbank_database.update_one(something, {"$set": {
                                                             "borrow_mai": 0,
                                                             "user_ID": 0,
@@ -149,7 +159,10 @@ def confirm_return(powerbank_ID: int):
 @router.get('/fee/{powerbank_ID}')
 def fee(powerbank_ID: int):
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
-    something = powerbank.pop(0)
+    try:
+        something = powerbank.pop(0)
+    except IndexError as e:
+        raise HTTPException(406, f"ID:{powerbank_ID} is not our powerbank.") from e
     from_user_database = list(user_database.find({"user_ID": something["user_ID"]}, {'_id': False}))
     user = from_user_database.pop(0)
     current_time = (datetime.now() - timedelta(hours=7)).timestamp() # Current time
@@ -167,5 +180,5 @@ def fee(powerbank_ID: int):
 
 @router.get('/get-history')
 def borrow_history():
-    history = list(borrow_history.find({}, {"_id": False}))
+    history = list(borrower_history.find({}, {"_id": False}))
     return {"user_history": history}
