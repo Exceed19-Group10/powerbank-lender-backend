@@ -33,6 +33,14 @@ class PowerBank(BaseModel):
     end_time: Union[None, datetime]
     late_mai: Union[None, int]
 
+
+class BorrowerHistory(BaseModel): 
+    powerbank_ID: int
+    username: str
+    use_time: str
+    # user_fee: int
+
+
 class BorrowLaewNaRequestBody(BaseModel):
     user_ID: str
     password: str
@@ -84,7 +92,7 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
             }
 
 
-@router.put('/return-laew/{powerbank_ID}')
+@router.put('/return-laew')
 def return_powerbank(powerbank_ID: int):
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
     try:
@@ -141,6 +149,6 @@ def fee(powerbank_ID: int):
     }
 
 
-@router.post('/history')
+@router.get('/history')
 def borrow_history():
     pass
