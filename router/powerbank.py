@@ -68,7 +68,6 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
         something = powerbank.pop(0)
     except IndexError:
         raise HTTPException()
-    # print(body)
     from_user_database = list(user_database.find({"user_ID": body.user_ID, "password": body.password}, {'_id': False}))
     if not len(from_user_database):
         raise HTTPException(401, "Authentication Error because UserID and Password doesn't match.")
@@ -138,13 +137,11 @@ def pai_leaw_naaaa(powerbank_ID: int):
 def confirm_return(powerbank_ID: int):
     """This method is used for confirm that powerbank is really back to its position."""
     powerbank = list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {"_id": False}))
-    # print(powerbank)
     try:
         something = powerbank.pop(0)
     except IndexError as e:
         raise HTTPException(406, f"ID:{powerbank_ID} is not our powerbank.") from e
     user_history = list(borrower_history.find({"powerbank_ID": powerbank_ID}, {"_id": False}).sort("time", DESCENDING))
-    # print(user_history)
     user = user_history.pop(0)
     if something["yu_mai"] == 1:
         if something["end_time"] < (datetime.now() - timedelta(hours=7)).timestamp():
