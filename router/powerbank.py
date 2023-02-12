@@ -100,16 +100,7 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
             "time": updated_powerbank["start_time"]
         }
     )
-    return {
-        "powerbank_ID": powerbank_ID,
-        "borrow_mai": 1,
-        "yu_mai": 0,
-        "user_ID": body.user_ID,
-        "username": user["username"],
-        "user_dept": user["user_dept"],
-        "start_time": (datetime.now() - timedelta(hours=7)).timestamp(),
-        "end_time": (datetime.now() + timedelta(seconds=30) - timedelta(hours=7)).timestamp()
-    }
+    return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
 
 
 @router.put('/return-laew/{powerbank_ID}')
@@ -168,7 +159,7 @@ def confirm_return(powerbank_ID: int):
                                                         }
                                                     }
                                                 )
-        return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))
+        return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
     raise HTTPException(400, "This powerbank is not available.")
 
 
@@ -191,13 +182,8 @@ def fee(powerbank_ID: int):
     difference = (current_time - something["end_time"])
     fee = (ceil(difference - 30)) * 1 if difference > 30 else 0
     user_database.update_one(user, {"$set": {"user_fee": fee}})
-    return {
-        "user_ID": something["user_ID"],
-        "password": user["password"],
-        "username": user["username"],
-        "user_dept": user["user_dept"],
-        "user_fee": fee
-    }
+    return list(user_database.find(
+        {"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
 
 
 @router.get('/get-history')
