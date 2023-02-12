@@ -57,7 +57,8 @@ def get_all_powerbank():
 @router.get('/get-powerbank/{powerbank_ID}')
 def get_powerbank(powerbank_ID: int):
     """Get specific powerbank data by powerbank_ID from powerbank collection."""
-    return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
+    return list(powerbank_database.find(
+        {"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
 
 
 @router.put('/borrow-laew/{powerbank_ID}')
@@ -100,7 +101,8 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
             "time": updated_powerbank["start_time"]
         }
     )
-    return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
+    return list(powerbank_database.find(
+        {"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
 
 
 @router.put('/return-laew/{powerbank_ID}')
@@ -128,7 +130,8 @@ def pai_leaw_naaaa(powerbank_ID: int):
         raise HTTPException(
             406, f"ID:{powerbank_ID} is not our powerbank.") from e
     powerbank_database.update_one(something, {"$set": {"yu_mai": 0}})
-    return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
+    return list(powerbank_database.find(
+        {"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
 
 
 @router.put('/check-dai-mai/{powerbank_ID}')
@@ -159,7 +162,8 @@ def confirm_return(powerbank_ID: int):
                                                         }
                                                     }
                                                 )
-        return list(powerbank_database.find({"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
+        return list(powerbank_database.find(
+            {"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
     raise HTTPException(400, "This powerbank is not available.")
 
 
@@ -183,7 +187,7 @@ def fee(powerbank_ID: int):
     fee = (ceil(difference - 30)) * 1 if difference > 30 else 0
     user_database.update_one(user, {"$set": {"user_fee": fee}})
     return list(user_database.find(
-        {"powerbank_ID": powerbank_ID}, {'_id': False}))[0]
+        {"user_ID": something["user_ID"]}, {'_id': False}))[0]
 
 
 @router.get('/get-history')
