@@ -68,7 +68,7 @@ def borrow_laew_naaaa(powerbank_ID: int, body: BorrowLaewNaRequestBody):
     try:
         something = powerbank.pop(0)
     except IndexError:
-        raise HTTPException()
+        raise HTTPException(400, "Bad request")
     from_user_database = list(user_database.find(
         {"user_ID": body.user_ID, "password": body.password}, {'_id': False}))
     if not len(from_user_database):
